@@ -1,0 +1,9 @@
+{% if latest_temperature_list %}
+    <ul>
+    {% for temperature in latest_temperature_list %}
+        <li><a href="/temperature/{{ temperature.id }}/">{{ temperature.unit }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No Temperatures are available.</p>
+{% endif %}

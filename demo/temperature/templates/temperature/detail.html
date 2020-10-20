@@ -1,0 +1,6 @@
+<h1>{{ temperature.unit }}</h1>
+<ul>
+{% for currentmeasurement in temperature.currentmeasurement_set.all %}
+    <li>{{ currentmeasurement.value }}</li>
+{% endfor %}
+</ul>
