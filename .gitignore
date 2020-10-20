@@ -1,0 +1,14 @@
+*.log
+*.pot
+*.pyc
+*.project
+*.pydevproject
+*.DS_Store
+*.virtual*
+*__pycache__*
+*db.sqlite3
+*djangoenv*
+
+local_settings.py
+.pydevproject
+.project
