@@ -20,5 +20,11 @@ $(VENV_NAME):  PY38
     fi
 	
 	. $(VENV_NAME)/bin/activate
+
 	pip --version
 	pip install Django
+	
+
+runserver: $(VENV_NAME)
+	. $(VENV_NAME)/bin/activate
+	cd demo && python manage.py runserver 0.0.0.0:8000 &
