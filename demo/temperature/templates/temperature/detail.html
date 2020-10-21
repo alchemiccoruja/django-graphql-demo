@@ -1,6 +1,8 @@
 <h1>{{ temperature.unit }}</h1>
-<ul>
-{% for currentmeasurement in temperature.currentmeasurement_set.all %}
-    <li>{{ currentmeasurement.value }}</li>
-{% endfor %}
-</ul>
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+<form action="{% url 'temperature:measure' temperature.id %}" method="post">
+    {% csrf_token %}
+    <input type="text" name="currentmeasurement" id="currentmeasurement_value" value="{{ currentmeasurement }}">
+    <input type="submit" value="measure">
+</form>

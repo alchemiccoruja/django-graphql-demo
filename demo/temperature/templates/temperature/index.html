@@ -1,7 +1,7 @@
 {% if latest_temperature_list %}
     <ul>
     {% for temperature in latest_temperature_list %}
-        <li><a href="/temperature/{{ temperature.id }}/">{{ temperature.unit }}</a></li>
+        <li><a href="{% url 'temperature:detail' temperature.id %}">{{ temperature.unit }}</a></li>
     {% endfor %}
     </ul>
 {% else %}

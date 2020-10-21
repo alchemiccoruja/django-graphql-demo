@@ -1,0 +1,9 @@
+<h1>{{ temperature.unit }}</h1>
+
+<ul>
+{% for measurement in temperature.currentmeasurement_set.all %}
+    <li>{{ measurement.value }} -- {{ measurement.timestamp  }} </li>
+{% endfor %}
+</ul>
+
+<a href="{% url 'temperature:detail' temperature.id %}">Back</a>

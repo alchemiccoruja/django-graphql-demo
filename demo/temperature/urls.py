@@ -2,14 +2,15 @@ from django.urls import path
 
 from . import views
 
-
+app_name = 'temperature'
 urlpatterns = [
     # ex: /temperature/
-    path('', views.index, name='index'),
+    path('', views.IndexView.as_view(), name='index'),
     # ex: /temperature/5/
-    path('<int:temperature_id>/', views.detail, name='detail'),
+    path('<int:pk>/', views.DetailView.as_view(), name='detail'),
     # ex: /temperature/5/measurements/
-    path('<int:temperature_id>/measurements/', views.measurements, name='measurements'),
+    path('<int:pk>/measurements/', views.ResultsView.as_view(), name='measurements'),
     # ex: /temperature/5/measure/
-    path('<int:temperature_id>/measure/', views.measure, name='measure'),
+    path('<int:pk>/measure/', views.measure, name='measure'),
 ]
+
