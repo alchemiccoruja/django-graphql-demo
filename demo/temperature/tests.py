@@ -2,8 +2,20 @@ import datetime
 import random
 from django.test import TestCase
 from django.utils import timezone
+from django.urls import reverse
 
 from .models import Temperature, CurrentMeasurement
+
+
+def create_temperature(unit, days):
+    """
+    Create a temperature with the given `unit` and measured the
+    given number of `days` offset to now (negative for measurements made
+    in the past, positive for temperatures that have yet to be measured).
+    """
+    create_time = timezone.now() + datetime.timedelta(days=days)
+    temperature = Temperature.objects.create(unit=unit, create_date=create_time)
+    return temperature
 
 
 class TemperatureModelTests(TestCase):
@@ -57,3 +69,64 @@ class TemperatureModelTests(TestCase):
         recent_measurement.save()
         
         self.assertIs(recent_temperature.was_measured_recently(), False)
+        
+
+
+class TemperatureIndexViewTests(TestCase):
+    def test_no_temperatures(self):
+        """
+        If no temperatures exist, an appropriate message is displayed.
+        """
+        response = self.client.get(reverse('temperature:index'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "No Temperatures are available.")
+        self.assertQuerysetEqual(response.context['latest_temperature_list'], [])
+
+    def test_past_temperature(self):
+        """
+        Temperatures with a create_date in the past are displayed on the
+        index page.
+        """
+        create_temperature(unit="Celcius", days=-30)
+        response = self.client.get(reverse('temperature:index'))
+        self.assertQuerysetEqual(
+            response.context['latest_temperature_list'],
+            ['<Temperature: Celcius>']
+        )
+    
+    def test_future_temperature(self):
+        """
+        Temperatures with a create_date in the future aren't displayed on
+        the index page.
+        """
+        create_temperature(unit="Future Celcius", days=30)
+        response = self.client.get(reverse('temperature:index'))
+        self.assertContains(response, "No Temperatures are available.")
+        self.assertQuerysetEqual(response.context['latest_temperature_list'], [])
+    
+    def test_future_temperature_and_past_temperature(self):
+        """
+        Even if both past and future temperature exist, only past questions
+        are displayed.
+        """
+        create_temperature(unit="Past Celcius", days=-30)
+        create_temperature(unit="Future Celcius", days=30)
+        response = self.client.get(reverse('temperature:index'))
+        self.assertQuerysetEqual(
+            response.context['latest_temperature_list'],
+            ['<Temperature: Past Celcius>']
+        )
+    
+    def test_two_past_temperature(self):
+        """
+        The temperatures index page may display multiple temperatures.
+        """
+        create_temperature(unit="Past Celcius 1", days=-30)
+        create_temperature(unit="Past Celcius 2", days=-5)
+        response = self.client.get(reverse('temperature:index'))
+        self.assertQuerysetEqual(
+            response.context['latest_temperature_list'],
+            ['<Temperature: Past Celcius 2>', '<Temperature: Past Celcius 1>']
+        )
+
+

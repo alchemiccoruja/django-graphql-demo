@@ -7,6 +7,8 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404, render
 from django.template import loader
 from django.views import generic
+from django.utils import timezone
+
 
 from .models import Temperature, CurrentMeasurement
 
@@ -28,8 +30,9 @@ class IndexView(generic.ListView):
 
     def get_queryset(self):
         """Return the last five Temperatures."""
-        return Temperature.objects.order_by('-create_date')[:5]
-
+        return Temperature.objects.filter(
+            create_date__lte=timezone.now()
+        ).order_by('-create_date')[:5]
 
  
 # def detail(request, temperature_id):
@@ -63,7 +66,8 @@ def measure(request, pk):
     temperature = get_object_or_404(Temperature, pk=pk)
     try:
         measurement_value = request.POST['currentmeasurement']
-        currentmeasurement = CurrentMeasurement()
+        now = timezone.now()
+        currentmeasurement = CurrentMeasurement(timestamp = now)
         currentmeasurement.value = float(measurement_value)
         currentmeasurement.unit = temperature
         currentmeasurement.save()
