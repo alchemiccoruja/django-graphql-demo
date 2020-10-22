@@ -1,3 +1,7 @@
+{% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'temperature/style.css' %}">
+
 {% if latest_temperature_list %}
     <ul>
     {% for temperature in latest_temperature_list %}

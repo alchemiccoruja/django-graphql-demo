@@ -20,6 +20,9 @@ class Temperature(models.Model):
         now = timezone.now()
         _yesterday = now - datetime.timedelta(days=1)
         return _yesterday <= _latest_measure.timestamp <= now
+    was_measured_recently.admin_order_field = 'create_date'
+    was_measured_recently.boolean = True
+    was_measured_recently.short_description = 'Measured recently?'
 
 class CurrentMeasurement(models.Model):
     unit = models.ForeignKey(Temperature, on_delete=models.CASCADE)
