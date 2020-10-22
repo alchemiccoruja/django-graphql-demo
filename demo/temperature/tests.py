@@ -4,6 +4,14 @@ from django.test import TestCase
 from django.utils import timezone
 from django.urls import reverse
 
+
+
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from django.test import LiveServerTestCase
+from selenium.webdriver.firefox.webdriver import WebDriver
+from selenium import webdriver
+
+
 from .models import Temperature, CurrentMeasurement
 
 
@@ -130,3 +138,37 @@ class TemperatureIndexViewTests(TestCase):
         )
 
 
+
+
+       
+class SeleniumBrowserTests(LiveServerTestCase):
+    #fixtures = ['user-data.json']
+    host = "0.0.0.0"
+    port = 8000
+    
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        firefox_options = webdriver.FirefoxOptions()
+        firefox_options.set_capability("browserVersion", "81")
+        #firefox_options.set_capability("platformName", "Windows XP")
+        cls.selenium  = webdriver.Remote(
+        command_executor='http://10.0.1.93:4444',
+        options=firefox_options
+        )
+        #cls.selenium = WebDriver()
+        cls.selenium.implicitly_wait(10)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.selenium.quit()
+        super().tearDownClass()
+
+    def test_login(self):
+        #breakpoint()
+        self.selenium.get('%s%s' % (self.live_server_url, '/admin/'))
+        username_input = self.selenium.find_element_by_name("username")
+        username_input.send_keys('admin')
+        password_input = self.selenium.find_element_by_name("password")
+        password_input.send_keys('admin')
+        self.selenium.find_element_by_xpath('//input[@value="Log in"]').click()
