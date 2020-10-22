@@ -165,10 +165,15 @@ class SeleniumBrowserTests(LiveServerTestCase):
         super().tearDownClass()
 
     def test_login(self):
-        #breakpoint()
+        from selenium.webdriver.support.wait import WebDriverWait
+        timeout = 2
+        
         self.selenium.get('%s%s' % (self.live_server_url, '/admin/'))
         username_input = self.selenium.find_element_by_name("username")
         username_input.send_keys('admin')
         password_input = self.selenium.find_element_by_name("password")
         password_input.send_keys('admin')
         self.selenium.find_element_by_xpath('//input[@value="Log in"]').click()
+        WebDriverWait(self.selenium, timeout).until(
+        lambda driver: driver.find_element_by_tag_name('body')
+        )
