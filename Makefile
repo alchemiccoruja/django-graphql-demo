@@ -22,7 +22,7 @@ $(VENV_NAME):  PY38
 	. $(VENV_NAME)/bin/activate
 
 	pip --version
-	pip install Django
+	pip install Django selenium graphene>=2.0
 	
 
 runserver: $(VENV_NAME)
